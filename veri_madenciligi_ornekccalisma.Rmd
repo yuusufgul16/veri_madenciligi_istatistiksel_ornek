@@ -1,0 +1,89 @@
+---
+title: "Veri madenciligi"
+output: html_notebook
+---
+
+
+```{r}
+data("USArrests")#ABD’deki tutuklamaların bulunduğu veri seti
+```
+
+```{r}
+#Bu komutla veri çerçevesinin yapısını görürssünüz. Bu, veri çerçevesindeki her sütunun adını, türünü ve ilk birkaç değerini içerir. Ayrıca, veri çerçevesinde kaç tane gözlem (satır) ve değişken (sütun) olduğunu da gösterir.
+
+str(USArrests)
+```
+
+
+```{r}
+#USArrests veri çerçevesindeki her sütun için bu özet istatistikleri alırsınız.
+summary(USArrests)
+```
+
+```{r}
+#numeric olan değerleri integer'a çevirdik sonradan kullanacak olursak diye
+murder<-as.integer(USArrests$Murder)
+rape<-as.integer(USArrests$Rape)
+```
+
+```{r}
+#Kodumuz, USArrests veri setindeki Assault sütununu x adlı bir değişkene atar
+x<- USArrests$Assault
+```
+
+
+```{r}
+#minimum x değeri
+minx<-min(x)
+```
+
+
+```{r}
+#maximum x değeri
+maxx<-max(x)
+```
+
+```{r}
+#USArrests veri setindeki Assault sütununu Min-Max normalizasyonu yöntemiyle normalleştirir. (0 ile 1 arasında)
+minmax_x<- ((x-min(x))/(max(x)-min(x)))
+print(minmax_x)
+```
+
+```{r}
+#USArrests veri setindeki Assault sütununu Z-Skor normalizasyonu yöntemiyle normalleştirir.
+zscorex<- ((x-mean(x))/(sd(x)))
+zscorex
+```
+
+```{r}
+#x, minmax_x ve zscorex değişkenlerini içeren bir veri çerçevesi oluşturur. Bu veri çerçevesi, USArrests veri setindeki Assault sütununun orijinal değerlerini (x), Min-Max normalleştirilmiş değerlerini (minmax_x) ve Z-Skor normalleştirilmiş değerlerini (zscorex) içerir.
+
+df<-data.frame(x,minmax_x,zscorex)
+df
+```
+
+```{r}
+#USArrests veri setindeki Assault sütununu clusterSim paketinin data.Normalization() fonksiyonu ile normalleştirir.
+library(clusterSim)
+attach(USArrests)
+normalization_assault<-data.Normalization(Assault,type = "n1",normalization = "column")
+normalization_assault
+
+data.frame(Assault,normalization_assault)
+```
+
+```{r}
+library(caret)
+df_assault<-data.frame(Assault = USArrests$Assault)
+caret_norm <- preProcess(df_assault, method = c("center", "scale"))
+normalized_df <- predict(caret_norm, newdata = df_assault)
+
+data.frame(Assault,normalized_df)
+
+```
+
+
+
+
+
+
